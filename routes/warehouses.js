@@ -23,8 +23,9 @@ router.route('/:warehouseid')
         const foundWarehouse = warehousesFile.find(warehouse => req.params.warehouseid === warehouse.id)
         const foundInventory = inventoriesFile.filter(inventory => req.params.warehouseid === inventory.warehouseID)
         
-        const fullDetails = [foundWarehouse, foundInventory]
+        const fullDetails = [{warehouse: foundWarehouse, inventory: foundInventory}]
 
+        console.log(fullDetails)
         res.status(200).json(fullDetails);
     })
 
