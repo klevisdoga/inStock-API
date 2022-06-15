@@ -4,7 +4,9 @@ const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());
-app.use(express());
+
+const warehousesRoute = require("./routes/warehouses");
+app.use("/warehouses", warehousesRoute);
 
 app.post("/:input", async (request, response) => {
   const input = request.params.input;
@@ -15,5 +17,5 @@ app.post("/:input", async (request, response) => {
 });
 
 app.listen(8080, () => {
-  console.log("Listening on 8080");
+  console.log("server is listening!");
 });
