@@ -5,7 +5,7 @@ const warehousesFile = JSON.parse(fs.readFileSync("./data/warehouses.json"));
 const inventoriesFile = JSON.parse(fs.readFileSync("./data/inventories.json"));
 const { v4: uuid } = require("uuid");
 
-// Gabe --- HOME get/post/delete
+// Warehouse — Get, Post
 router
   .route("/")
   .get((req, res) => {
@@ -45,7 +45,7 @@ router.route("/:warehouseid").get((req, res) => {
   res.status(200).json(fullDetails);
 });
 
-// // Delete warehouses objects
+// Warehouse — Delete
 router.delete("/:warehouseId/delete", (req, res) => {
   const { warehouseId } = req.params;
 
@@ -58,7 +58,7 @@ router.delete("/:warehouseId/delete", (req, res) => {
   res.status(204).json(deleteWarehouse);
 });
 
-// Edit warehouse objects -- unfinished
+// Warehouse — Edit
 router.put("/:warehouseId/edit", (req, res) => {
   const { warehouseId } = req.params;
   const warehouseInfo = req.body;
