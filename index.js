@@ -8,6 +8,9 @@ app.use(express.json());
 const warehousesRoute = require("./routes/warehouses");
 app.use("/warehouses", warehousesRoute);
 
+const inventoriesRoute = require("./routes/inventories");
+app.use("/inventories", inventoriesRoute);
+
 app.post("/:input", async (request, response) => {
   const input = request.params.input;
   const API_URL = ``;
