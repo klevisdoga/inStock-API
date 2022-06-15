@@ -3,6 +3,7 @@ const router = express.Router();
 const fs = require("fs");
 const warehousesFile = JSON.parse(fs.readFileSync("./data/warehouses.json"));
 const inventoriesFile = JSON.parse(fs.readFileSync("./data/inventories.json"));
+const { v4: uuid } = require("uuid");
 
 const allWarehouses = warehousesFile.map(
   (warehouse) =>
@@ -17,6 +18,7 @@ const allWarehouses = warehousesFile.map(
     })
 );
 
+// Gabe
 router.route("/").get((req, res) => {
   res.status(200).json(allWarehouses);
 });
@@ -37,58 +39,37 @@ router.route("/:warehouseid").get((req, res) => {
   res.status(200).json(fullDetails);
 });
 
-// GET OBJECT BY ID
+// Post warehouse object
+router.post("/", (req, res) => {
+  const newWarehouse = { ...req.body, id: uuid() };
 
-router.get('/:id', (req, res) => {
-  const individualWarehouse = warehouseList.find(warehouse => warehouse.id === req.params.id)
-  const { id, name, address, city, country } = individualWarehouse
-  res.json({
-      id: id,
-      name: name,
-      address: address,
-      city: city,
-      country: country,
-      contact: {
-          name: individualWarehouse.contact.name,
-          position: individualWarehouse.contact.position,
-          phone: individualWarehouse.contact.phone,
-          email: individualWarehouse.contact.email
-      }
-  })
-})
+  let updatedWarehouses = [...warehousesFile, newWarehouse];
+  fs.writeFileSync("./data/warehouses.json", JSON.stringify(updatedWarehouses));
+  res.status(201).json(updatedWarehouses);
+});
 
-// Post warehouse object 
-router.post('/', (req, res) => {
-  warehouseList.push(req.body);
-  res.status(201).send({status:'created'});
-  res.json("");
-})
+// Edit warehouse objects -- unfinished
+router.put("/:warehouseId/edit", (req, res) => {
+  // // const updateWarehouse = (id, rating)
+  // const updatedWarehouses = warehousesFile.map(warehouse => {
+  //   if (warehouse.id = id)
+  // })
+  // console.log(req.params);
+  // console.log(req.body);
+  // res.send("Success");
+});
 
-// Edit warehouse objects
+// // Delete warehouses objects
 
-router.put(':id', (req, res) => {
-  (e.id === req.params.id) 
-  
-  const individualWarehouse = warehouseList.find(warehouse => warehouse.id === req.params.id)
-  const editWarehouse = req.body;
+// const deleteWarehouse = (req, res) => {
+//   const getId = req.params.id;
+//   let deleted = warehouseData.filter((item) => {
+//     return item.id !== getId;
+//   });
 
-  editWarehouse.id.filter((warehouse) => warehouse.req === req.params.id);
-  res.status(201).send({status:'edited'});
-  res.json("");
+// //   warehouseData = deleted;
+// //   res.json(warehouseData);
 
-  individualWarehouse;
-})
-
-// Delete warehouses objects
-
-const deleteWarehouse = (req, res) => {
-  const getID = req.params.id;
-  let deleted = warehouseData.filter(item => {
-      return item.id !== getId
-  });
-  warehouseData = deleted;
-  res.json(warehouseData);
-
-  return router.delete("/:id", deleteWarehouse);
-}
+//   return router.delete("/:id", deleteWarehouse);
+// };
 module.exports = router;
