@@ -5,23 +5,26 @@ const warehousesFile = JSON.parse(fs.readFileSync("./data/warehouses.json"));
 const inventoriesFile = JSON.parse(fs.readFileSync("./data/inventories.json"));
 const { v4: uuid } = require("uuid");
 
-const allWarehouses = warehousesFile.map(
-  (warehouse) =>
-    (warehouse = {
-      name: warehouse.name,
-      address:
-        warehouse.address + " " + warehouse.city + " " + warehouse.country,
-      contactName: warehouse.contact.name,
-      contactPhone: warehouse.contact.phone,
-      contactEmail: warehouse.contact.email,
-      id: warehouse.id,
-    })
-);
+// Gabe --- HOME get/post/delete
+router
+  .route("/")
+  .get((req, res) => {
+    res.status(200).json(warehousesFile);
+  })
+  // Post warehouse object
+  .post((req, res) => {
+    const newWarehouse = {
+      id: uuid(),
+      ...req.body,
+    };
 
-// Gabe
-router.route("/").get((req, res) => {
-  res.status(200).json(allWarehouses);
-});
+    let updatedWarehouses = [...warehousesFile, newWarehouse];
+    fs.writeFileSync(
+      "./data/warehouses.json",
+      JSON.stringify(updatedWarehouses)
+    );
+    res.status(201).json(updatedWarehouses);
+  });
 
 router.route("/:warehouseid").get((req, res) => {
   const foundWarehouse = warehousesFile.find(
@@ -32,44 +35,50 @@ router.route("/:warehouseid").get((req, res) => {
   );
 
   const fullDetails = [
-    { warehouse: foundWarehouse, inventory: foundInventory },
+    {
+      warehouse: foundWarehouse,
+      inventory: foundInventory,
+    },
   ];
 
   console.log(fullDetails);
   res.status(200).json(fullDetails);
 });
 
-// Post warehouse object
-router.post("/", (req, res) => {
-  const newWarehouse = { ...req.body, id: uuid() };
+// // Delete warehouses objects
+router.delete("/:warehouseId/delete", (req, res) => {
+  const { warehouseId } = req.params;
 
-  let updatedWarehouses = [...warehousesFile, newWarehouse];
-  fs.writeFileSync("./data/warehouses.json", JSON.stringify(updatedWarehouses));
-  res.status(201).json(updatedWarehouses);
+  const deleteWarehouse = warehousesFile.filter(
+    (warehouse) => warehouse.id !== warehouseId
+  );
+
+  fs.writeFileSync("./data/warehouses.json", JSON.stringify(deleteWarehouse));
+
+  res.status(204).json(deleteWarehouse);
 });
 
 // Edit warehouse objects -- unfinished
 router.put("/:warehouseId/edit", (req, res) => {
-  // // const updateWarehouse = (id, rating)
-  // const updatedWarehouses = warehousesFile.map(warehouse => {
-  //   if (warehouse.id = id)
-  // })
-  // console.log(req.params);
-  // console.log(req.body);
-  // res.send("Success");
+  const { warehouseId } = req.params;
+  const warehouseInfo = req.body;
+
+  let editWarehouse = warehousesFile.filter(
+    (warehouse) => warehouse.id !== warehouseId
+  );
+
+  const newData = editWarehouse.flat();
+  const updatedWarehouse = {
+    id: warehouseId,
+    ...warehouseInfo,
+  };
+  newData.push(updatedWarehouse);
+
+  console.log(newData);
+
+  fs.writeFileSync("./data/warehouses.json", JSON.stringify(newData));
+
+  res.status(201).json(newData);
 });
 
-// // Delete warehouses objects
-
-// const deleteWarehouse = (req, res) => {
-//   const getId = req.params.id;
-//   let deleted = warehouseData.filter((item) => {
-//     return item.id !== getId;
-//   });
-
-// //   warehouseData = deleted;
-// //   res.json(warehouseData);
-
-//   return router.delete("/:id", deleteWarehouse);
-// };
 module.exports = router;
