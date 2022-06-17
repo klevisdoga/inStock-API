@@ -46,6 +46,10 @@ router.put("/:inventoryId/edit", (req, res) => {
     const { inventoryId } = req.params;
     const inventoryInfo = req.body;
 
+    if(!req.body.warehouseID || !req.body.warehouseName || !req.body.itemName || !req.body.description || !req.body.category || !req.body.status || !req.body.quantity) {
+        return res.status(400).send('Please fill out the required fields')
+    }
+
     let editInventory = inventoriesFile.filter(
         (inventory) => inventory.id !== inventoryId
     );
@@ -58,7 +62,7 @@ router.put("/:inventoryId/edit", (req, res) => {
     newData.push(updatedInventory);
 
     fs.writeFileSync("./data/inventories.json", JSON.stringify(newData));
-
+ 
     res.status(201).json(newData);
 });
 
