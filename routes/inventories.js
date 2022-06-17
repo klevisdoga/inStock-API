@@ -6,7 +6,6 @@ const { v4: uuid } = require('uuid')
 
 router.route("/")
     .get((req, res) => {
-        console.log(inventoriesFile)
         res.json(inventoriesFile).status(200);
     })
     .post((req, res) => {
@@ -23,17 +22,13 @@ router.route("/")
         res.status(201).json(updatedInventoryItem);
     });
 
-router.route("/:inventoryid")
-    .get((req, res) => {
+router.get("/:inventoryid", (req, res) => {
+    const foundInventory = inventoriesFile.find(
+        (inventory) => req.params.inventoryid === inventory.id
+    );
 
-        const foundInventory = inventoriesFile.find(
-            (inventory) => req.params.inventoryid === inventory.id
-        );
-
-        console.log(foundInventory);
-        res.status(200).json(foundInventory);
-
-    })
+    res.status(200).json(foundInventory);
+})
 
 router.delete("/:inventoryId/delete", (req, res) => {
     const { inventoryId } = req.params;
@@ -46,9 +41,14 @@ router.delete("/:inventoryId/delete", (req, res) => {
 
     res.status(204).json(deleteInventory);
 });
+
 router.put("/:inventoryId/edit", (req, res) => {
     const { inventoryId } = req.params;
     const inventoryInfo = req.body;
+
+    if(!req.body.warehouseID || !req.body.warehouseName || !req.body.itemName || !req.body.description || !req.body.category || !req.body.status || !req.body.quantity) {
+        return res.status(400).send('Please fill out the required fields')
+    }
 
     let editInventory = inventoriesFile.filter(
         (inventory) => inventory.id !== inventoryId
@@ -61,10 +61,8 @@ router.put("/:inventoryId/edit", (req, res) => {
     };
     newData.push(updatedInventory);
 
-    console.log(newData);
-
-    fs.writeFileSync("./data/inventorys.json", JSON.stringify(newData));
-
+    fs.writeFileSync("./data/inventories.json", JSON.stringify(newData));
+ 
     res.status(201).json(newData);
 });
 
