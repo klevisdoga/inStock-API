@@ -46,7 +46,7 @@ router.put("/:inventoryId/edit", (req, res) => {
     const { inventoryId } = req.params;
     const inventoryInfo = req.body;
 
-    if(!req.body.warehouseID || !req.body.warehouseName || !req.body.itemName || !req.body.description || !req.body.category || !req.body.status || !req.body.quantity) {
+    if(!req.body.warehouseID || !req.body.warehouseName || !req.body.itemName || !req.body.description || !req.body.category || !req.body.status) {
         return res.status(400).send('Please fill out the required fields')
     }
 
